@@ -15,8 +15,28 @@ fs = require('fs');
 
 const server = http.createServer((req, res) => {
     if(req.url === '/') {
-        res.writeHead(200, { 'Content-Type': 'text/html' }) // If the resopnse is 200(OK) then render content in HTML
-        res.end('<h1>Home</h1>'); // Renders this content at localhost:PORT
+        fs.readFile(path.join(__dirname, 'public', 'index.html'), (err, content) => {
+            if (err) throw err;
+            res.writeHead(200, { 'Content-Type': 'text/html' }); // If the resopnse is 200(OK) then render content in HTML
+            res.end(content); // Renders this content at localhost:PORT
+        })
+    }
+
+    if(req.url === '/about') {
+        fs.readFile(path.join(__dirname, 'public', 'about.html'), (err, content) => {
+            if (err) throw err;
+            res.writeHead(200, { 'Content-Type': 'text/html' }); // If the resopnse is 200(OK) then render content in HTML
+            res.end(content); // Renders this content at localhost:PORT
+        })
+    }
+
+    if(req.url === '/api/users') {
+        const users = [
+            { name: 'Char Aznable', age: 28 },
+            { name: 'Amuro Ray', age: 19 }
+        ];
+        res.writeHead(200, { 'Content-Type': 'application/json'});
+        res.end(JSON.stringify(users));
     }
 });
 // Get the PORT from the .env file. If the PORT is not there, use PORT 5000
