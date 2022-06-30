@@ -1,14 +1,3 @@
-/* const Logger = require('./logger');
-
-const logger = new Logger();
-
-logger.on('message', function(data) {
-    console.log('Called Listener', data)
-});
-
-logger.log('Hello World');
-// Called Listener { id: '1092bc99-fd10-4299-9ce5-685a445d9fc9', msg: 'Hello World' } */
-
 const http = require('http'),
 path = require('path'),
 fs = require('fs');
@@ -66,6 +55,27 @@ const server = http.createServer((req, res) => {
             contentType = 'image/jpg';
             break;
     }
+
+    // Read file
+    fs.readFile(filePath, (err, content) => {
+        if(err) {
+            if(err.code == 'ENOENT') {
+                //Page not found
+                fs.readFile(path.join(__dirname, 'public', '404.html'), (err, content) => {
+                    res.writeHead(200, { 'Content-Type': 'text/html' });
+                    res.end(content, 'utf8');
+                })
+            }else {
+                // Server error
+                res.writeHead(500);
+                res.end(`Server Error: ${err.code}`);
+            }
+        }else {
+            // Success
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(content, 'utf8');
+        }
+    });
 });
 // Get the PORT from the .env file. If the PORT is not there, use PORT 5000
 const PORT = process.env.PORT || 5000;
